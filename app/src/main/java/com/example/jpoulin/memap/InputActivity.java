@@ -5,6 +5,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.renderscript.ScriptGroup;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +31,6 @@ import java.util.Locale;
 public class InputActivity extends FragmentActivity {
 
     public EditText location;
-    private MapFragment map;
     MapView mMapView;
     public String location_string;
     public Locale locale;
@@ -40,8 +40,6 @@ public class InputActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.input_activity);
-
-        final MapFragment mapFragment = new MapFragment();
 
         locale = new Locale("en", "CA");
 
@@ -57,14 +55,12 @@ public class InputActivity extends FragmentActivity {
                 location = findViewById(R.id.location);
                 location_string = location.getText().toString();
                 setGlobalLocation(location_string);
-
-                Bundle args = new Bundle();
-                args.putString("location", location_string);
-                mapFragment.setArguments(args);
-
                 Log.e("Location string", location_string);
                 Location location = new Location(location_string);
-//                Address address = new Address(location);
+                Intent intent = new Intent(InputActivity.this, MapsActivity.class);
+                intent.putExtra("location", location_string);
+                startActivity(intent);
+
             }
         });
 
