@@ -1,32 +1,50 @@
 package com.example.jpoulin.memap;
 
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.app.Application;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
+
 
 /**
  * Created by jpoulin on 2018-03-03.
  */
 
-public class InputActivity extends AppCompatActivity {
+public class InputActivity extends FragmentActivity {
 
     public EditText location;
+    private MapFragment map;
+    MapView mMapView;
+    public String location_string;
+    public Locale locale;
+    public Geocoder geocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.input_activity);
+
+        final MapFragment mapFragment = new MapFragment();
+
+        locale = new Locale("en", "CA");
+
+        geocoder = new Geocoder(this, locale);
 
         Button send = findViewById(R.id.button);
 
@@ -36,22 +54,37 @@ public class InputActivity extends AppCompatActivity {
                 setResult(RESULT_OK);
                 Log.e("Button did click", "yes");
                 location = findViewById(R.id.location);
-                String location_string = location.getText().toString();
+                location_string = location.getText().toString();
+                setGlobalLocation(location_string);
+
+                Bundle args = new Bundle();
+                args.putString("location", location_string);
+                mapFragment.setArguments(args);
+
                 Log.e("Location string", location_string);
                 Location location = new Location(location_string);
 //                Address address = new Address(location);
-                Intent intent = new Intent(InputActivity.this, MapsActivity.class);
-                intent.putExtra("location", location_string);
-                startActivity(intent);
-
             }
         });
+
     }
+
+    public void setGlobalLocation(String location) {
+        ((GlobalVariables) this.getApplication()).setLocation(location);
+    }
+
 
 
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
     }
 
 }

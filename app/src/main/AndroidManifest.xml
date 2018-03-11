@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".GlobalVariables"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -41,6 +42,8 @@
                 android:name="android.supper.PARENT_ACTIVITY"
                 android:value=".InputActivity" />
         </activity>
+
+
     </application>
 
 </manifest>

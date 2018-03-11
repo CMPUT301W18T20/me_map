@@ -2,20 +2,19 @@ package com.example.jpoulin.memap;
 
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,11 +25,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.input_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        try {
+            MapsInitializer.initialize(getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
+
     }
 
 
@@ -49,8 +57,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Bundle extras = getIntent().getExtras();
 
-//        Address address = extras.getParcelable("address");
-//        Location location = extras.getParcelable("location");
         String location = extras.getString("location");
         Log.e("Passed location", location);
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -59,8 +65,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try {
 
-//            Double lat = location.getLatitude();
-//            Double lon = location.getLongitude();
 
             addresses = geocoder.getFromLocationName(location, 1);
             Log.e("Location", addresses.toString());
@@ -82,4 +86,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(display_location).title("Marker at task location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(display_location, zoomLevel));
     }
+
 }
