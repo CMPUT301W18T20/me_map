@@ -1,5 +1,6 @@
 package com.example.jpoulin.memap;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -84,7 +85,6 @@ public class InputActivity extends FragmentActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
     }
 
 }
