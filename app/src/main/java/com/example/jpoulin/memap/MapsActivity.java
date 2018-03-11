@@ -54,6 +54,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Button send = findViewById(R.id.button);
 
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setResult(RESULT_OK);
+                Log.e("Button did click", "yes");
+                location = findViewById(R.id.location);
+                location_string = location.getText().toString();
+                setGlobalLocation(location_string);
+                Log.e("Location string", location_string);
+                Location location = new Location(location_string);
+                Intent intent = new Intent(MapsActivity.this, MapsActivity.class);
+                intent.putExtra("location", location_string);
+                startActivity(intent);
+
+            }
+        });
+
+
         ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
         exec.scheduleAtFixedRate(new Runnable() {
             public void run() {
@@ -65,22 +83,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     public void updateLocation() {
-        Button send = findViewById(R.id.button);
-
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(RESULT_OK);
-                Log.e("Button did click", "yes");
-                location = findViewById(R.id.location);
-                location_string = location.getText().toString();
-                setGlobalLocation(location_string);
-                Log.e("Location string", location_string);
-                Location location = new Location(location_string);
-
-            }
-        });
+        location = findViewById(R.id.location);
+        location_string = location.getText().toString();
+        setGlobalLocation(location_string);
+        Log.e("Location string", location_string);
+        Location location = new Location(location_string);
     }
+
 
 
     /**
