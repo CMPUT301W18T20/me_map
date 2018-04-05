@@ -12,11 +12,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -38,10 +41,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.input_activity);
+        setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
 
         try {
             MapsInitializer.initialize(getApplicationContext());
@@ -51,25 +55,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
-
-        Button send = findViewById(R.id.button);
-
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(RESULT_OK);
-                Log.e("Button did click", "yes");
-                location = findViewById(R.id.location);
-                location_string = location.getText().toString();
-                setGlobalLocation(location_string);
-                Log.e("Location string", location_string);
-                Location location = new Location(location_string);
-                Intent intent = new Intent(MapsActivity.this, MapsActivity.class);
-                intent.putExtra("location", location_string);
-                startActivity(intent);
-
-            }
-        });
 
 
         ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
@@ -105,45 +90,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Bundle extras = getIntent().getExtras();
+        LatLng edmonton = new LatLng(53.68, -113.52);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(edmonton));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(8.0f));
+        UiSettings mapUiSettings = mMap.getUiSettings();
+        mapUiSettings.setZoomControlsEnabled(true);
 
-        String location = extras.getString("location");
-        Log.e("Passed location", location);
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-        List<Address> addresses = null;
+            @Override
+            public void onMapClick(LatLng point) {
+                // TODO Auto-generated method stub
 
-        try {
+                mMap.clear();
+                mMap.addMarker(new MarkerOptions()
+                        .position(point)
+                        .draggable(true));
 
+            }
+        });
 
-            addresses = geocoder.getFromLocationName(location, 1);
-            Log.e("Location", addresses.toString());
-        }
-        catch (IOException e){
-            Log.e("Did it work?", "no, it did not");
-        }
-
-        assert addresses != null;
-        Address current_address;
-        try {
-            current_address = addresses.get(0);
-
-            Double lat = current_address.getLatitude();
-            Double lon = current_address.getLongitude();
-
-
-            // Add a marker in the user provided location and move the camera
-            LatLng display_location = new LatLng(lat, lon);
-            float zoomLevel = 12.0f;
-            mMap.addMarker(new MarkerOptions().position(display_location).title("Marker at task location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(display_location, zoomLevel));
-
-        } catch (IndexOutOfBoundsException e) {
-            Toast.makeText(this, "Invalid location!", Toast.LENGTH_LONG).show();
-
-        }
-
-        updateLocation();
 
     }
 
